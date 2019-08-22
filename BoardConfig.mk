@@ -97,6 +97,9 @@ endif
 # Lineage Hardware
 JAVA_SOURCE_OVERLAYS := org.lineageos.hardware|$(DEVICE_PATH)/lineagehw|**/*.java
 
+# UI
+TARGET_ADDITIONAL_GRALLOC_10_USAGE_BITS := 0x02000000U
+
 # Charger
 BOARD_CHARGER_ENABLE_SUSPEND := true
 
