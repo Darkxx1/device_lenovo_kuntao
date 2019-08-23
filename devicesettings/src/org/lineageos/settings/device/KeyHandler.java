@@ -29,6 +29,8 @@ public class KeyHandler implements DeviceKeyHandler {
 
     private final Context mContext;
     private boolean mFingerprintGesturesEnabled = false;
+    private static long time = 0;
+    private static boolean isHomePressed = false;
 
     public KeyHandler(Context context) {
         mContext = context;
@@ -40,19 +42,40 @@ public class KeyHandler implements DeviceKeyHandler {
 
     @Override
     public KeyEvent handleKeyEvent(KeyEvent event) {
+
+        int keyCode;
+        int scanCode;
+        int action;
+
         if (!hasSetupCompleted()) {
             return event;
         }
 
-        if ((event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getScanCode() == 562 ||
-                event.getKeyCode() == KeyEvent.KEYCODE_APP_SWITCH && event.getScanCode() == 563)) {
-            /* Consume the fingerprint gestures key events if not enabled */
+        keyCode = event.getKeyCode();
+        scanCode = event.getScanCode();
+
+        if(keyCode == KeyEvent.KEYCODE_HOME) {
+                action = event.getAction();
+                if(action == KeyEvent.ACTION_DOWN) isHomePressed = true;
+                else if(action == KeyEvent.ACTION_UP) {
+                        isHomePressed = false;
+                        time = System.currentTimeMillis();
+                }
+            return event;
+        }
+
+        if ((keyCode == KeyEvent.KEYCODE_BACK && scanCode == 562) ||
+                (keyCode == KeyEvent.KEYCODE_APP_SWITCH && scanCode == 563)) {
+
+           if(isHomePressed) return null;
+           if((System.currentTimeMillis() - time) < 400) return null;
+           /* Consume the fingerprint gestures key events if not enabled */
             return !mFingerprintGesturesEnabled ? null : event;
         }
 
         return event;
     }
-
+    
     private boolean hasSetupCompleted() {
         return Settings.Secure.getInt(mContext.getContentResolver(),
                 Settings.Secure.USER_SETUP_COMPLETE, 0) != 0;
