@@ -14,9 +14,13 @@
 # limitations under the License.
 #
 
-cc_library_shared {
-    name: "libnfcdummy",
-    defaults: ["hidl_defaults"],
-    vendor: true,
-    srcs: ["power.c"],
-}
+LOCAL_PATH:= $(call my-dir)
+
+include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES := power.c
+LOCAL_MODULE := libnfcdummy
+LOCAL_MODULE_TAGS := optional
+LOCAL_VENDOR_MODULE := true
+
+include $(BUILD_SHARED_LIBRARY)
